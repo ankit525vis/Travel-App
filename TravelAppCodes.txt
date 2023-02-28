@@ -1,0 +1,270 @@
+exercise -01
+
+String data = 'Wipro Limited';
+system.debug(data.endsWith('Limited'));
+system.debug(data.endsWith('Wipro'));
+---------------------------------------
+Date thisDay = Date.today();
+Date newDate = thisDay.addDays(30);
+system.debug(newDate);
+---------------------------------------
+String data1 = '10';
+Integer data2 = Integer.valueOf(data1);
+system.debug('Sum = '+(data2+20));
+---------------------------------------
+String data1 = 'Manipal Global';
+system.debug('Length = '+data1.length());
+-----------------------------------------
+List<Integer> list1 = new List<Integer>();
+list1.add(10);
+list1.add(20);
+system.debug('List after add = ' + list1);
+system.debug('Second Element = '+ list1.get(1));
+list1.set(1,30);
+system.debug('List after set = ' + list1);
+list1.clear();
+system.debug('List after clear = ' + list1);
+===========================================================
+Exercise:-02
+
+Integer x = 20;
+	for(Integer x = 0; x < 10; x++){
+    	system.debug('Value of x is: '+x);
+	}
+=======================================================
+Exercise:-03
+
+Integer myLuckyNumber = 15;
+Integer myUnluckyNumber = 7;
+if(myLuckyNumber != (myUnluckyNumber+8)){
+    system.debug('True');
+}
+else{
+    system.debug('False');
+}
+=========================================================
+Exercise:-04
+
+Boolean isTrue = True;
+Boolean isFalse = false;
+system.debug(isTrue || isFalse);
+===========================================================
+Exercise:-05
+
+Date today = Date.today();
+Date tomorrow = Date.today().addDays(1);
+system.debug(today != tomorrow);
+=============================================================
+Exercise:-06
+
+Integer score = 100;
+if(score == 100){
+    system.debug('Grade: A+');
+}
+else if(score >= 90){
+    system.debug('Grade: A');
+}
+else if(score >= 80){
+    system.debug('Grade: B');
+}
+else{
+    system.debug('Grade: Failed');
+}
+==================================================================
+exercise -07
+
+List<Billing__c> bills = [select Name, Status__c from Billing__c];
+List<String> names = new List<String>();
+for(Billing__c bill:bills){
+    system.debug('Value of the Current Recordin the Loop'+bill);
+    if(bill.Status__c=='Paid'){
+        names.add(bill.Name);
+    }
+}
+system.debug('Value of BilliingList '+names);
+====================================================================
+Excercise:-08
+
+public class DiscountClass {
+    public static final Decimal REGULAR_DISCOUNT = 0.1; // regular discount is 10%
+    
+    public Decimal calculateDiscount(Integer price) {
+        Decimal finalPrice = price - (price * REGULAR_DISCOUNT);
+        return finalPrice;
+    }
+}
+
+==========================================================
+Excercise:09
+
+public class InterfaceExample{
+	public Interface InterfaceExample{
+    	Double percentageDiscountTobeApplied();
+	}
+	public class PremiumCustomer implements InterfaceExample{
+    	public Double percentageDiscountTobeApplied(){
+        	return 0.30;
+    	}
+	}
+	public class NormalCustomer implements InterfaceExample{
+	    public Double percentageDiscountTobeApplied(){
+   	    	return 0.10;
+	    }
+	}
+}
+
+===========================================================
+ex-10
+
+Customer__c customer = new Customer__c(Name='Wipro', Customer_Type__c='Premium');
+insert customer;
+------------------------------
+List<Billing__c> billList = new List<Billing__c>{new Billing__c(Status__c='Paid',Amount_Paid__c=5000000)};
+	
+Database.SaveResult[] srList = Database.insert(billList,false);
+for(Database.SaveResult sr:srList){
+    if(sr.isSuccess()){
+        system.debug('Successfully inserted bill. Billing ID = '+sr.getId());
+    }
+    else{
+        for(Database.Error err:sr.getErrors()){
+            system.debug('Error is '+ err.getMessage());
+            system.debug('Fields effected by the error = '+err.getFields());
+        }
+    }
+}
+
+
+========================================================================
+EXCERCISE:- 11
+
+Select Id, Amount, StageName, Account.Name, Account.Industry, Account.Website from Opportunity where Account.Industry = 'Energy' and Account.AnnualRevenue > 5000
+==================================================================================
+Excersise:-12
+
+trigger CustomerTrigger on Customer__c (after insert, after update) {
+	List<Billing__c> billingList = new List<Billing__c>();
+    
+    for(Customer__c customer:Trigger.New){
+        if(customer.Active__c == True){
+            Billing__c billing = new Billing__c();
+            billing.Status__c = 'Paid';
+            billing.Amount_Paid__c = 1000000;
+            billingList.add(billing);
+        }
+    }
+    insert billingList;
+}
+
+===================================================================================
+Exercise 13
+
+@isTest
+public class TestCustomerTrigger {
+    @isTest static void testName(){
+        Customer__c cus = new Customer__c();
+        cus.Active__c = False;
+        insert cus;
+        
+        Test.startTest();
+        cus.Active__c = True;
+        update cus;
+        Test.stopTest();
+    }
+}
+==================================================================================
+exercise-14
+
+trigger DisqualifyTestLeads on Lead (before insert,before update,after insert) {
+
+    List<Lead> li = new List<Lead>();
+    if(Trigger.isBefore && Trigger.isInsert){
+        for(Lead myLead : Trigger.New){
+            if(( String.isNotBlank(myLead.FirstName) && String.isNotBlank(myLead.LastName)) && (myLead.FirstName=='Test' || myLead.LastName=='Test')){
+                System.debug(myLead.FirstName + ' ' + myLead.LastName + 'Will be disqualified!');
+                li.add(myLead);
+            }
+        }
+       
+        for(Lead myLead : li){
+           myLead.Status = 'Disqualified';
+        }
+    }
+   
+}
+====================================================================================
+Excersise:-15
+
+@isTest
+public class DisqualifyTestLeads {
+    @isTest
+    private static void insertData1(){
+        Lead l1 = new Lead();
+        l1.FirstName = 'Test';
+        l1.LastName = 'Test';
+        l1.Company = 'Test';
+        Test.startTest();
+        insert l1;
+        Test.stopTest();
+        System.assertEquals('Test', l1.FirstName);
+        System.assertEquals('Test', l1.LastName);
+        System.assertEquals('Test', l1.Company);    
+    }  
+}
+======================================================================================
+Excersise:-16
+
+<apex:page standardController="Opportunity" tabStyle="Opportunity">
+    <apex:pageBlock >
+        <apex:pageBlockSection title="Opportunity Information">
+            <apex:outputField value="{!Opportunity.name}"/>
+            <apex:outputField value="{!Opportunity.amount}"/>
+            <apex:outputField value="{!Opportunity.closeDate}"/>
+            <apex:outputField value="{!Opportunity.account.name}"/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>
+================================================================================
+Excersise:-17
+
+<apex:page standardController="Account" recordSetVar="accounts">
+
+    <apex:pageBlock title="Accounts">
+        <ul>
+            <apex:repeat value="{!Accounts}" var="a">
+                <li>
+                    <apex:outputLink value="/{!a.Id}">{!a.Name}</apex:outputLink>
+                </li>
+            </apex:repeat>
+        </ul>
+    </apex:pageBlock>
+</apex:page>
+
+======================================================================================
+Excersise:-18
+
+public class NewCaseListController {
+
+list<case> newcase = new list<case>();
+    public list<case> GetNewCases() 
+    {
+    newcase = [Select Id,CaseNumber from case where status='New'];
+    
+        return newcase;
+    }
+}
+---------------------------------------------------------
+<apex:page controller="NewCaseListController">
+  <apex:repeat var="case" value="{!NewCases}">
+  <li>
+  <apex:outputLink value="/{!case.id}">{!case.id}</apex:outputLink>
+    {!case.CaseNumber}
+  </li>
+
+  
+   
+  </apex:repeat>
+ 
+ 
+</apex:page>
+==========================================================================================
